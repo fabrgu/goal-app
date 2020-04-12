@@ -18,7 +18,7 @@ class User(db.Model):
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     email = db.Column(db.String(64), nullable=True)
-    password = db.Column(db.String(64), nullable=True)
+    password = db.Column(db.String(500), nullable=True)
     created_on = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
@@ -32,7 +32,8 @@ class Goal(db.Model):
 
     __tablename__ = "goals"
 
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    goal_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     name = db.Column(db.String(200), nullable=True)
     description = db.Column(db.String(500), nullable=True)
     created_on = db.Column(db.DateTime, nullable=False)

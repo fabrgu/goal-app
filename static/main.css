@@ -1,6 +1,6 @@
 .bootstrap-form {
   margin:1.5em;
 }
-.bootstrap-form .submit-button {
+.bootstrap-form .submit-button, .add-goal-button{
   margin-top: 1em;
 }

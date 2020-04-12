@@ -2,17 +2,17 @@
 {% block content %}
 
 <div class="bootstrap-form">
-  <form action="/update_goal/{{ goal.goal_id }}" method="POST">
+  <form action="/add_goal" method="POST">
     <div class="form-group mb-2">
       <label for="name">What is the name of your goal?</label>
       <input type="text" placeholder="Goal name" required
-      class="form-control" name="name" id="name" value="{{ goal.name }}">
+      class="form-control" name="name" id="name">
     <div>
 
     <div class="form-group mb-2">
       <label for="description">Describe your goal</label>
       <textarea name="description" class="form-control"
-      required id="description" rows="5">{{ goal.description }}</textarea>
+      required id="description" rows="5"></textarea>
     <div>
     <div class="form-group submit-button">
       <button type="submit" class="btn btn-primary mb-2">Submit</button>

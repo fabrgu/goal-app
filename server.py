@@ -18,8 +18,9 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Go to login page if user is not logged in"""
-    if session.get('user_id'):
-        return redirect("/goals")
+    user_id = session.get('user_id')
+    if user_id:
+        return redirect(f'/goal_list/{user_id}')
     else:
         return render_template('login.html')
 
@@ -39,19 +40,15 @@ def register():
     user_confirmed = User.query.filter(User.email == email).first()
     
     if not user_confirmed:
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
         password = request.form.get('password')
 
         user = User(email=email,
-                    first_name=first_name,
-                    last_name=last_name,
                     password=generate_password_hash(password),
                     created_on=datetime.today())
 
         db.session.add(user)
         db.session.commit()
-        flash('User successfully created')
+        flash('User successfully created. Please log in.')
     else:
         flash('User not created. Email associated with another user.')
 
@@ -76,8 +73,8 @@ def login():
     email = request.form.get('email')
     unhashed_password = request.form.get('password')
 
-    user = User.query.filter(User.email == email,
-                                      User.password == password).first()
+    user = User.query.filter(User.email == email).first()
+
     if user and check_password_hash(user.password, unhashed_password):
         session['user_id'] = user.user_id
         flash('Logged in')
@@ -87,7 +84,7 @@ def login():
         return redirect('/registration')
 
 
-@app.route('/goals/<int:user_id>')
+@app.route('/goal_list/<int:user_id>')
 def goal_list(user_id):
     """Show list of goals for user. """
 
@@ -96,7 +93,7 @@ def goal_list(user_id):
     return render_template('goal_list.html', goals=goals)
 
 
-@app.route('/goal/<int:goal_id>')
+@app.route('/goal_details/<int:goal_id>')
 def movie_details(goal_id):
     """ Show details about goal."""
 
@@ -110,9 +107,11 @@ def add_goal():
     """Add new goal """
     description = request.form.get('description')
     name = request.form.get('name')
+    user_id = session.get('user_id')
 
     new_goal = Goal(description=description, 
                     name=name,
+                    user_id=user_id,
                     created_on=datetime.today(),
                     modified_on=datetime.today())
     db.session.add(new_goal)
@@ -120,7 +119,13 @@ def add_goal():
     
     flash('Your goal has been added!')
 
-    return redirect('/goals')
+    return redirect(f'/goal_list/{user_id}')
+
+@app.route('/add_goal')
+def show_add_goal_form():
+    """Show add goal form """
+
+    return render_template('/add_goal.html')
 
 @app.route('/update_goal/<int:goal_id>', methods=['POST'])
 def update_goal(goal_id):
@@ -139,7 +144,7 @@ def update_goal(goal_id):
         db.session.commit()
         flash('Your goal has been updated!')
 
-    return redirect(f'/goal/{goal_id}')
+    return redirect(f'/goal_list/{user_id}')
 
 
 if __name__ == "__main__":
